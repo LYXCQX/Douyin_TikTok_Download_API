@@ -30,7 +30,7 @@ async def fetch_data(url: str, headers: dict = None):
 
 
 @router.get("/download", summary="在线下载抖音|TikTok视频/图片/Online download Douyin|TikTok video/image")
-async def download_file_hybrid(request: Request,
+async def download_file_hybrid(download_path: str,
                                url: str = Query(
                                    example="https://www.douyin.com/video/7372484719365098803",
                                    description="视频或图片的URL地址，也支持抖音|TikTok的分享链接，例如：https://v.douyin.com/e4J8Q7A/"),
@@ -70,15 +70,15 @@ async def download_file_hybrid(request: Request,
     if not config["API"]["Download_Switch"]:
         code = 400
         message = "Download endpoint is disabled in the configuration file. | 配置文件中已禁用下载端点。"
-        return ErrorResponseModel(code=code, message=message, router=request.url.path,
-                                  params=dict(request.query_params))
+        return ErrorResponseModel(code=code, message=message, router=url,
+                                  params=dict(url))
 
     # 开始解析数据/Start parsing data
     try:
         data = await HybridCrawler.hybrid_parsing_single_video(url, minimal=True)
     except Exception as e:
         code = 400
-        return ErrorResponseModel(code=code, message=str(e), router=request.url.path, params=dict(request.query_params))
+        return ErrorResponseModel(code=code, message=str(e), router=url, params=dict(url))
 
     # 开始下载文件/Start downloading files
     try:
@@ -86,7 +86,7 @@ async def download_file_hybrid(request: Request,
         platform = data.get('platform')
         aweme_id = data.get('aweme_id')
         file_prefix = config.get("API").get("Download_File_Prefix") if prefix else ''
-        download_path = os.path.join(config.get("API").get("Download_Path"), f"{platform}_{data_type}")
+        # download_path = os.path.join(config.get("API").get("Download_Path"), f"{platform}_{data_type}")
 
         # 确保目录存在/Ensure the directory exists
         os.makedirs(download_path, exist_ok=True)
@@ -153,4 +153,4 @@ async def download_file_hybrid(request: Request,
     except Exception as e:
         print(e)
         code = 400
-        return ErrorResponseModel(code=code, message=str(e), router=request.url.path, params=dict(request.query_params))
+        return ErrorResponseModel(code=code, message=str(e), router=url, params=dict(url))
