@@ -43,16 +43,29 @@ class HybridCrawler:
         self.DouyinWebCrawler = DouyinWebCrawler()
         self.TikTokWebCrawler = TikTokWebCrawler()
         self.TikTokAPPCrawler = TikTokAPPCrawler()
+        self.last_request_time = 0  # 添加上次请求时间记录
 
     async def hybrid_parsing_single_video(self, url: str, minimal: bool = False):
+        # 检查距离上次请求的时间间隔
+        current_time = asyncio.get_event_loop().time()
+        time_diff = current_time - self.last_request_time
+        if time_diff < 30:  # 如果间隔小于30秒
+            wait_time = 30 - time_diff
+            await asyncio.sleep(wait_time)  # 等待剩余时间
+        
+        self.last_request_time = asyncio.get_event_loop().time()  # 更新请求时间
+
         # 解析抖音视频/Parse Douyin video
         if "douyin" in url:
             platform = "douyin"
             aweme_id = await self.DouyinWebCrawler.get_aweme_id(url)
             data = await self.DouyinWebCrawler.fetch_one_video(aweme_id)
-            data = data.get("aweme_detail")
-            # $.aweme_detail.aweme_type
-            aweme_type = data.get("aweme_type")
+            if data.get('filter_detail'):
+                data = data.get('filter_detail')
+            else:
+                data = data.get("aweme_detail")
+                # $.aweme_detail.aweme_type
+                aweme_type = data.get("aweme_type")
         # 解析TikTok视频/Parse TikTok video
         elif "tiktok" in url:
             platform = "tiktok"
