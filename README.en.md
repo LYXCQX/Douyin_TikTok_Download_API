@@ -397,7 +397,7 @@ Use the following command to check if your container is running:
 docker ps
 ```
 
-This lists all active containers. Find`douyin_tiktok_api `to confirm its normal operation.
+This lists all active containers. Find`douyin_tiktok_api `以确认其正常运行。
 
 ### Step 4: Access the application
 
