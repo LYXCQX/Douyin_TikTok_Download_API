@@ -8,15 +8,15 @@ import asyncio
 from typing import Union
 from pathlib import Path
 
-from crawlers.utils.logger import logger
-from crawlers.douyin.web.xbogus import XBogus as XB
-from crawlers.utils.utils import (
+from Douyin_TikTok_Download_API.crawlers.utils.logger import logger
+from Douyin_TikTok_Download_API.crawlers.douyin.web.xbogus import XBogus as XB
+from Douyin_TikTok_Download_API.crawlers.utils.utils import (
     gen_random_str,
     get_timestamp,
     extract_valid_urls,
     split_filename,
 )
-from crawlers.utils.api_exceptions import (
+from Douyin_TikTok_Download_API.crawlers.utils.api_exceptions import (
     APIError,
     APIConnectionError,
     APIResponseError,

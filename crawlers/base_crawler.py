@@ -39,8 +39,8 @@ import re
 
 from httpx import Response
 
-from crawlers.utils.logger import logger
-from crawlers.utils.api_exceptions import (
+from Douyin_TikTok_Download_API.crawlers.utils.logger import logger
+from Douyin_TikTok_Download_API.crawlers.utils.api_exceptions import (
     APIError,
     APIConnectionError,
     APIResponseError,

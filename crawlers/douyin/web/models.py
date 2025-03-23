@@ -1,7 +1,7 @@
 from typing import Any, List
 from pydantic import BaseModel, Field
 
-from crawlers.douyin.web.utils import TokenManager, VerifyFpManager
+from Douyin_TikTok_Download_API.crawlers.douyin.web.utils import TokenManager, VerifyFpManager
 
 
 # Base Model

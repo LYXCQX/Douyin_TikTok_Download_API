@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, Request, HTTPException  # 导入FastAPI组件
 from app.api.models.APIResponseModel import ResponseModel, ErrorResponseModel  # 导入响应模型
 
-from crawlers.tiktok.app.app_crawler import TikTokAPPCrawler  # 导入APP爬虫
+from Douyin_TikTok_Download_API.crawlers.tiktok.app.app_crawler import TikTokAPPCrawler  # 导入APP爬虫
 
 router = APIRouter()
 TikTokAPPCrawler = TikTokAPPCrawler()

@@ -7,8 +7,8 @@ import yaml
 from fastapi import APIRouter, Request, Query, HTTPException  # 导入FastAPI组件
 from starlette.responses import FileResponse
 
-from app.api.models.APIResponseModel import ErrorResponseModel  # 导入响应模型
-from crawlers.hybrid.hybrid_crawler import HybridCrawler  # 导入混合数据爬虫
+from Douyin_TikTok_Download_API.app.api.models.APIResponseModel import ErrorResponseModel  # 导入响应模型
+from Douyin_TikTok_Download_API.crawlers.hybrid.hybrid_crawler import HybridCrawler  # 导入混合数据爬虫
 
 router = APIRouter()
 HybridCrawler = HybridCrawler()
@@ -29,6 +29,7 @@ async def fetch_data(url: str, headers: dict = None):
 
 # 下载视频专用
 async def fetch_data_stream(url: str, request:Request , headers: dict = None, file_path: str = None):
+    print(f'下載視頻url{url}')
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
     } if headers is None else headers.get('headers')
@@ -40,7 +41,7 @@ async def fetch_data_stream(url: str, request:Request , headers: dict = None, fi
             # 流式保存文件
             async with aiofiles.open(file_path, 'wb') as out_file:
                 async for chunk in response.aiter_bytes():
-                    if await request.is_disconnected():
+                    if request and await request.is_disconnected():
                         print("客户端断开连接，清理未完成的文件")
                         await out_file.close()
                         os.remove(file_path)
@@ -49,7 +50,7 @@ async def fetch_data_stream(url: str, request:Request , headers: dict = None, fi
             return True
 
 @router.get("/download", summary="在线下载抖音|TikTok视频/图片/Online download Douyin|TikTok video/image")
-async def download_file_hybrid(download_path: str,
+async def download_file_hybrid(request: Request,download_path: str,
                                url: str = Query(
                                    example="https://www.douyin.com/video/7372484719365098803",
                                    description="视频或图片的URL地址，也支持抖音|TikTok的分享链接，例如：https://v.douyin.com/e4J8Q7A/"),

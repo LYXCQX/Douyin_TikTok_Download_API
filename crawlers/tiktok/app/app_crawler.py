@@ -39,20 +39,20 @@ import yaml  # 配置文件
 import os  # 系统操作
 
 # 基础爬虫客户端和TikTokAPI端点
-from crawlers.base_crawler import BaseCrawler
-from crawlers.tiktok.app.endpoints import TikTokAPIEndpoints
-from crawlers.utils.utils import model_to_query_string
+from Douyin_TikTok_Download_API.crawlers.base_crawler import BaseCrawler
+from Douyin_TikTok_Download_API.crawlers.tiktok.app.endpoints import TikTokAPIEndpoints
+from Douyin_TikTok_Download_API.crawlers.utils.utils import model_to_query_string
 
 # 重试机制
 from tenacity import *
 
 # TikTok接口数据请求模型
-from crawlers.tiktok.app.models import (
+from Douyin_TikTok_Download_API.crawlers.tiktok.app.models import (
     BaseRequestModel, FeedVideoDetail
 )
 
 # 标记已废弃的方法
-from crawlers.utils.deprecated import deprecated
+from Douyin_TikTok_Download_API.crawlers.utils.deprecated import deprecated
 
 # 配置文件路径
 path = os.path.abspath(os.path.dirname(__file__))

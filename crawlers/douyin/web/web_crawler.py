@@ -40,17 +40,17 @@ from urllib.parse import urlencode, quote  # URL编码
 import yaml  # 配置文件
 
 # 基础爬虫客户端和抖音API端点
-from crawlers.base_crawler import BaseCrawler
-from crawlers.douyin.web.endpoints import DouyinAPIEndpoints
+from Douyin_TikTok_Download_API.crawlers.base_crawler import BaseCrawler
+from Douyin_TikTok_Download_API.crawlers.douyin.web.endpoints import DouyinAPIEndpoints
 # 抖音接口数据请求模型
-from crawlers.douyin.web.models import (
+from Douyin_TikTok_Download_API.crawlers.douyin.web.models import (
     BaseRequestModel, LiveRoomRanking, PostComments,
     PostCommentsReply, PostDetail,
     UserProfile, UserCollection, UserLike, UserLive,
     UserLive2, UserMix, UserPost
 )
 # 抖音应用的工具类
-from crawlers.douyin.web.utils import (AwemeIdFetcher,  # Aweme ID获取
+from Douyin_TikTok_Download_API.crawlers.douyin.web.utils import (AwemeIdFetcher,  # Aweme ID获取
                                        BogusManager,  # XBogus管理
                                        SecUserIdFetcher,  # 安全用户ID获取
                                        TokenManager,  # 令牌管理

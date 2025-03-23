@@ -4,7 +4,7 @@ from fastapi import APIRouter, Query, Body, Request, HTTPException  # 导入Fast
 
 from app.api.models.APIResponseModel import ResponseModel, ErrorResponseModel  # 导入响应模型
 
-from crawlers.tiktok.web.web_crawler import TikTokWebCrawler  # 导入TikTokWebCrawler类
+from Douyin_TikTok_Download_API.crawlers.tiktok.web.web_crawler import TikTokWebCrawler  # 导入TikTokWebCrawler类
 
 router = APIRouter()
 TikTokWebCrawler = TikTokWebCrawler()

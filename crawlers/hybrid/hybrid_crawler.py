@@ -33,9 +33,9 @@
 
 import asyncio
 
-from crawlers.douyin.web.web_crawler import DouyinWebCrawler  # 导入抖音Web爬虫
-from crawlers.tiktok.web.web_crawler import TikTokWebCrawler  # 导入TikTok Web爬虫
-from crawlers.tiktok.app.app_crawler import TikTokAPPCrawler  # 导入TikTok App爬虫
+from Douyin_TikTok_Download_API.crawlers.douyin.web.web_crawler import DouyinWebCrawler  # 导入抖音Web爬虫
+from Douyin_TikTok_Download_API.crawlers.tiktok.web.web_crawler import TikTokWebCrawler  # 导入TikTok Web爬虫
+from Douyin_TikTok_Download_API.crawlers.tiktok.app.app_crawler import TikTokAPPCrawler  # 导入TikTok App爬虫
 
 
 class HybridCrawler:

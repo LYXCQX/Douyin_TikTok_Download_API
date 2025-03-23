@@ -1,7 +1,7 @@
 from urllib.parse import urlencode
-from crawlers.bilibili.web import wrid
-from crawlers.utils.logger import logger
-from crawlers.bilibili.web.endpoints import BilibiliAPIEndpoints
+from Douyin_TikTok_Download_API.crawlers.bilibili.web import wrid
+from Douyin_TikTok_Download_API.crawlers.utils.logger import logger
+from Douyin_TikTok_Download_API.crawlers.bilibili.web.endpoints import BilibiliAPIEndpoints
 
 
 class EndpointGenerator:
