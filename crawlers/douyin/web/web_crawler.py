@@ -82,7 +82,18 @@ class DouyinWebCrawler:
             "proxies": {"http://": douyin_config["proxies"]["http"], "https://": douyin_config["proxies"]["https"]},
         }
         return kwargs
-
+    def get_douyin_headers_sync(self):
+        douyin_config = config["TokenManager"]["douyin"]
+        kwargs = {
+            "headers": {
+                "Accept-Language": douyin_config["headers"]["Accept-Language"],
+                "User-Agent": douyin_config["headers"]["User-Agent"],
+                "Referer": douyin_config["headers"]["Referer"],
+                "Cookie": douyin_config["headers"]["Cookie"],
+            },
+            "proxies": {"http://": douyin_config["proxies"]["http"], "https://": douyin_config["proxies"]["https"]},
+        }
+        return kwargs
     "-------------------------------------------------------handler接口列表-------------------------------------------------------"
 
     # 获取单个作品数据

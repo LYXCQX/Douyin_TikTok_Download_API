@@ -392,3 +392,18 @@ def merge_config(
             merged_conf[key] = value  # CLI 参数会覆盖自定义配置和主配置中的同名参数
 
     return merged_conf
+
+url_type_code_dict = {
+    # common
+    0: 'video',
+    # Douyin
+    2: 'image',
+    4: 'video',
+    68: 'image',
+    # TikTok
+    51: 'video',
+    55: 'video',
+    58: 'video',
+    61: 'video',
+    150: 'image'
+}
