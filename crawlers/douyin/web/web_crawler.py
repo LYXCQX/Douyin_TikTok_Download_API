@@ -37,8 +37,6 @@ import asyncio  # 异步I/O
 import os  # 系统操作
 import time  # 时间操作
 from urllib.parse import urlencode, quote  # URL编码
-
-import loguru
 import yaml  # 配置文件
 
 # 基础爬虫客户端和抖音API端点
@@ -82,7 +80,7 @@ class DouyinWebCrawler:
         self.cookie_manager = CookieManager(account_path)
         # 检查cookie是否有效
         if not self.cookie_manager.is_valid():
-            self.logger.warning("Cookie无效或缺少关键字段，某些接口可能无法正常工作")
+            print("Cookie无效或缺少关键字段，某些接口可能无法正常工作")
 
     # 从配置文件中获取抖音的请求头，同时使用cookie_manager中的cookie
     async def get_douyin_headers(self):
