@@ -37,10 +37,13 @@ import asyncio  # 异步I/O
 import os  # 系统操作
 import time  # 时间操作
 from urllib.parse import urlencode, quote  # URL编码
+
+import loguru
 import yaml  # 配置文件
 
 # 基础爬虫客户端和抖音API端点
 from Douyin_TikTok_Download_API.crawlers.base_crawler import BaseCrawler
+from Douyin_TikTok_Download_API.crawlers.douyin.web.cookie_manager import CookieManager
 from Douyin_TikTok_Download_API.crawlers.douyin.web.endpoints import DouyinAPIEndpoints
 # 抖音接口数据请求模型
 from Douyin_TikTok_Download_API.crawlers.douyin.web.models import (
@@ -68,32 +71,59 @@ with open(f"{path}/config.yaml", "r", encoding="utf-8") as f:
 
 
 class DouyinWebCrawler:
+    def __init__(self, account_path: str = None):
+        """
+        初始化抖音Web爬虫
+        
+        Args:
+            account_path: account.json文件的路径，如果不提供，将使用默认路径
+        """
+        # 初始化cookie管理器
+        self.cookie_manager = CookieManager(account_path)
+        # 检查cookie是否有效
+        if not self.cookie_manager.is_valid():
+            self.logger.warning("Cookie无效或缺少关键字段，某些接口可能无法正常工作")
 
-    # 从配置文件中获取抖音的请求头
+    # 从配置文件中获取抖音的请求头，同时使用cookie_manager中的cookie
     async def get_douyin_headers(self):
         douyin_config = config["TokenManager"]["douyin"]
+        # 获取cookie管理器中的cookie字符串
+        cookie_string = self.cookie_manager.get_cookie_string()
+        # 如果cookie管理器中没有有效的cookie，则使用配置文件中的cookie
+        # if not cookie_string:
+        #     self.logger.warning("使用配置文件中的默认Cookie")
+        #     cookie_string = douyin_config["headers"]["Cookie"]
         kwargs = {
             "headers": {
                 "Accept-Language": douyin_config["headers"]["Accept-Language"],
                 "User-Agent": douyin_config["headers"]["User-Agent"],
                 "Referer": douyin_config["headers"]["Referer"],
-                "Cookie": douyin_config["headers"]["Cookie"],
+                "Cookie": cookie_string,
             },
             "proxies": {"http://": douyin_config["proxies"]["http"], "https://": douyin_config["proxies"]["https"]},
         }
         return kwargs
+    
     def get_douyin_headers_sync(self):
         douyin_config = config["TokenManager"]["douyin"]
+        # 获取cookie管理器中的cookie字符串
+        cookie_string = self.cookie_manager.get_cookie_string()
+        # 如果cookie管理器中没有有效的cookie，则使用配置文件中的cookie
+        # if not cookie_string:
+        #     self.logger.warning("使用配置文件中的默认Cookie")
+        #     cookie_string = douyin_config["headers"]["Cookie"]
+            
         kwargs = {
             "headers": {
                 "Accept-Language": douyin_config["headers"]["Accept-Language"],
                 "User-Agent": douyin_config["headers"]["User-Agent"],
                 "Referer": douyin_config["headers"]["Referer"],
-                "Cookie": douyin_config["headers"]["Cookie"],
+                "Cookie": cookie_string,
             },
             "proxies": {"http://": douyin_config["proxies"]["http"], "https://": douyin_config["proxies"]["https"]},
         }
         return kwargs
+    
     "-------------------------------------------------------handler接口列表-------------------------------------------------------"
 
     # 获取单个作品数据
