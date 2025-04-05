@@ -13,10 +13,10 @@ from Douyin_TikTok_Download_API.app.api.models.APIResponseModel import ErrorResp
 from Douyin_TikTok_Download_API.crawlers.hybrid.hybrid_crawler import HybridCrawler  # 导入混合数据爬虫
 
 from social_auto_upload.conf import BASE_DIR
+from config_util import extract_drama_name_from_json
 
 router = APIRouter()
 HybridCrawler = HybridCrawler()
-FILTERED_DRAMA_NAMES_FILE = os.path.join(os.path.join(BASE_DIR, 'transfer'), 'filtered_drama_names.json')
 # 读取上级再上级目录的配置文件
 config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'config.yaml')
 with open(config_path, 'r', encoding='utf-8') as file:
@@ -209,20 +209,9 @@ async def download_file_by_aweme_id(download_path: str,
         video_info_json = data.get('filter_detail') or data.get("aweme_detail")
         anchor_title = None
         if not drama_name:
-            # 加载过滤剧名列表
-            filtered_drama_names = []
-            if os.path.exists(FILTERED_DRAMA_NAMES_FILE):
-                try:
-                    with open(FILTERED_DRAMA_NAMES_FILE, 'r', encoding='utf-8') as f:
-                        filtered_drama_names = json.load(f)
-                except:
-                    pass
-            anchor_title = video_info_json.get('anchor_info', {}).get('title')
-            # 如果剧名在过滤列表中，设置为None
-            if anchor_title and anchor_title in filtered_drama_names:
-                anchor_title = None
-            drama_name = (anchor_title or
-                                    next((match for match in re.findall(r'《(.*?)》', json.dumps(video_info_json, ensure_ascii=False))), None))
+            # 使用工具方法提取剧名，保持原有逻辑不变
+            drama_name, _ = extract_drama_name_from_json(video_info_json)
+            
         if not drama_name:
             return False,"未找到剧名"
         download_path = os.path.join(download_path, drama_name)
