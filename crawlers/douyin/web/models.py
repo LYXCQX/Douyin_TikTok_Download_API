@@ -1,7 +1,46 @@
+from enum import StrEnum
 from typing import Any, List
-from pydantic import BaseModel, Field
 
 from Douyin_TikTok_Download_API.crawlers.douyin.web.utils import TokenManager, VerifyFpManager
+from pydantic import BaseModel
+
+
+# 搜索筛选选项枚举
+class SortType(StrEnum):
+    """排序方式枚举"""
+    COMPREHENSIVE = "0"  # 综合排序
+    LATEST_LIKE = "1"  # 最新点赞
+    LATEST_PUBLISH = "2"  # 最新发布
+
+
+class PublishTime(StrEnum):
+    """发布时间枚举"""
+    ANY = "0"  # 不限
+    WITHIN_DAY = "1"  # 一天内
+    WITHIN_WEEK = "7"  # 一周内
+    WITHIN_HALF_YEAR = "180"  # 半年内
+
+
+class FilterDuration(StrEnum):
+    """视频时长枚举"""
+    UNDER_ONE_MINUTE = "0-1"  # 1分钟以下
+    ONE_TO_FIVE_MINUTES = "1-5"  # 1-5分钟
+    ABOVE_FIVE_MINUTES = "5-10000"  # 5分钟以上
+
+
+class SearchRange(StrEnum):
+    """搜索范围枚举"""
+    ANY = "0"  # 不限
+    RECENTLY_VIEWED = "1"  # 最近看过
+    NOT_VIEWED = "2"  # 还未看过
+    FOLLOWING = "3"  # 关注的人
+
+
+class ContentType(StrEnum):
+    """内容类型枚举"""
+    ANY = "0"  # 不限
+    VIDEO = "1"  # 视频
+    GRAPHIC = "2"  # 图文
 
 
 # Base Model
@@ -238,11 +277,35 @@ class FollowUserLive(BaseRequestModel):
 
 class SuggestWord(BaseRequestModel):
     query: str = ""
-    count: int = 8
+    count: int = 20
     business_id: str
     from_group_id: str
     rsp_source: str = ""
     penetrate_params: dict = {}
+
+
+class GeneralSearch(BaseRequestModel):
+    search_channel: str = "aweme_general"
+    enable_history: int = 1
+    # filter_selected字典选项说明：
+    # sort_type: 0-综合排序, 1-最新点赞, 2-最新发布
+    # publish_time: 0-不限, 1-一天内, 7-一周内, 180-半年内
+    # filter_duration: "0-1"-1分钟以下, "1-5"-1到5分钟, "5-10000"-5分钟以上
+    # search_range: 0-不限, 1-最近看过, 2-还未看过, 3-关注的人
+    # content_type: 0-不限, 1-视频, 2-图文
+    filter_selected: dict = None
+    keyword: str = ""
+    search_source: str = "switch_tab"
+    query_correct_type: int = 1
+    is_filter_search: int = 1
+    from_group_id: str = ""
+    offset: int = 0
+    count: int = 10
+    need_filter_settings: int = 0
+    list_type: str = "multi"
+    search_id: str = ""
+    support_h265: int = 1
+    support_dash: int = 1
 
 
 class LoginGetQr(BaseLoginModel):
