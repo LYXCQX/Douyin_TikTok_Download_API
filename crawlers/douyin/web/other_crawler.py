@@ -1,4 +1,5 @@
 import asyncio  # 异步I/O
+import json
 import os  # 系统操作
 import time  # 时间操作
 from typing import Dict, Optional
@@ -147,34 +148,32 @@ class DouyinOtherCrawler:
 
             # 默认筛选设置
             default_filter = {"sort_type": "0", "publish_time": "0"}
-
             # 使用枚举值更新筛选选项
             if sort_type is not None:
-                default_filter["sort_type"] = sort_type
+                default_filter["sort_type"] = sort_type.value
             if publish_time is not None:
-                default_filter["publish_time"] = publish_time
+                default_filter["publish_time"] = publish_time.value
             if filter_duration is not None:
-                default_filter["filter_duration"] = filter_duration
+                default_filter["filter_duration"] = filter_duration.value
             if search_range is not None:
-                default_filter["search_range"] = search_range
+                default_filter["search_range"] = search_range.value
             if content_type is not None:
-                default_filter["content_type"] = content_type
+                default_filter["content_type"] = content_type.value
 
             # 如果提供了自定义筛选选项，则覆盖枚举设置
             if filter_options:
                 default_filter.update(filter_options)
 
             # 更新params的filter_selected字段
-            params.filter_selected = default_filter
-
+            params.filter_selected = json.dumps(default_filter, separators=(',', ':'))
             params_dict = params.dict()
+            print(params_dict)
             # 获取有效的msToken
             # params_dict["msToken"] = TokenManager.gen_real_msToken()
             # 生成a_bogus参数
             a_bogus = BogusManager.ab_model_2_endpoint(params_dict, kwargs["headers"]["User-Agent"])
             # 构建完整的API请求URL
             endpoint = f"{DouyinAPIEndpoints.GENERAL_SEARCH}?{urlencode(params_dict)}&a_bogus={a_bogus}"
-
             # 发送请求并获取响应
             response = await crawler.fetch_get_json(endpoint)
             return response

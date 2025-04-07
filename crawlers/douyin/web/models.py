@@ -9,7 +9,7 @@ from pydantic import BaseModel
 class SortType(StrEnum):
     """排序方式枚举"""
     COMPREHENSIVE = "0"  # 综合排序
-    LATEST_LIKE = "1"  # 最新点赞
+    LATEST_LIKE = "1"  # 最多点赞
     LATEST_PUBLISH = "2"  # 最新发布
 
 
@@ -288,12 +288,12 @@ class GeneralSearch(BaseRequestModel):
     search_channel: str = "aweme_general"
     enable_history: int = 1
     # filter_selected字典选项说明：
-    # sort_type: 0-综合排序, 1-最新点赞, 2-最新发布
+    # sort_type: 0-综合排序, 1-最多点赞, 2-最新发布
     # publish_time: 0-不限, 1-一天内, 7-一周内, 180-半年内
     # filter_duration: "0-1"-1分钟以下, "1-5"-1到5分钟, "5-10000"-5分钟以上
     # search_range: 0-不限, 1-最近看过, 2-还未看过, 3-关注的人
     # content_type: 0-不限, 1-视频, 2-图文
-    filter_selected: dict = None
+    filter_selected: str = None
     keyword: str = ""
     search_source: str = "switch_tab"
     query_correct_type: int = 1
@@ -301,7 +301,7 @@ class GeneralSearch(BaseRequestModel):
     from_group_id: str = ""
     offset: int = 0
     count: int = 10
-    need_filter_settings: int = 0
+    need_filter_settings: int = 1
     list_type: str = "multi"
     search_id: str = ""
     support_h265: int = 1
