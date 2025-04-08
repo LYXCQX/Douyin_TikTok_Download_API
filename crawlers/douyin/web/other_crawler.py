@@ -129,7 +129,6 @@ class DouyinOtherCrawler:
         """
         # 获取抖音的实时Cookie
         kwargs = await self.get_douyin_headers()
-        print(f"kwargs: {kwargs}")
         # 创建一个基础爬虫
         base_crawler = BaseCrawler(proxies=kwargs["proxies"], crawler_headers=kwargs["headers"])
         async with base_crawler as crawler:
@@ -169,10 +168,8 @@ class DouyinOtherCrawler:
             a_bogus = BogusManager.ab_model_2_endpoint(params_dict, kwargs["headers"]["User-Agent"])
             # 构建完整的API请求URL
             endpoint = f"{DouyinAPIEndpoints.GENERAL_SEARCH}?{urlencode(params_dict)}&a_bogus={a_bogus}"
-            print(f"endpoint: {endpoint}")
             # 发送请求并获取响应
             response = await crawler.fetch_get_json(endpoint)
-            print(f"response: {response}")
             return response
 
 
