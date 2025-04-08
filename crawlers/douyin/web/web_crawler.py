@@ -41,7 +41,6 @@ import yaml  # 配置文件
 
 # 基础爬虫客户端和抖音API端点
 from Douyin_TikTok_Download_API.crawlers.base_crawler import BaseCrawler
-from Douyin_TikTok_Download_API.crawlers.douyin.web.cookie_manager import CookieManager
 from Douyin_TikTok_Download_API.crawlers.douyin.web.endpoints import DouyinAPIEndpoints
 # 抖音接口数据请求模型
 from Douyin_TikTok_Download_API.crawlers.douyin.web.models import (
@@ -60,6 +59,8 @@ from Douyin_TikTok_Download_API.crawlers.douyin.web.utils import (AwemeIdFetcher
                                        extract_valid_urls  # URL提取
                                        )
 
+from Douyin_TikTok_Download_API.crawlers.douyin.web.cookie_manager import get_cookie_string
+
 # 配置文件路径
 path = os.path.abspath(os.path.dirname(__file__))
 
@@ -76,21 +77,14 @@ class DouyinWebCrawler:
         Args:
             account_path: account.json文件的路径，如果不提供，将使用默认路径
         """
-        # 初始化cookie管理器
-        self.cookie_manager = CookieManager(account_path)
-        # 检查cookie是否有效
-        if not self.cookie_manager.is_valid():
-            print("Cookie无效或缺少关键字段，某些接口可能无法正常工作")
-
     # 从配置文件中获取抖音的请求头，同时使用cookie_manager中的cookie
     async def get_douyin_headers(self):
         douyin_config = config["TokenManager"]["douyin"]
         # 获取cookie管理器中的cookie字符串
-        cookie_string = self.cookie_manager.get_cookie_string()
+        cookie_string = get_cookie_string()
         # 如果cookie管理器中没有有效的cookie，则使用配置文件中的cookie
-        # if not cookie_string:
-        #     self.logger.warning("使用配置文件中的默认Cookie")
-        #     cookie_string = douyin_config["headers"]["Cookie"]
+        if not cookie_string:
+            cookie_string = douyin_config["headers"]["Cookie"]
         kwargs = {
             "headers": {
                 "Accept-Language": douyin_config["headers"]["Accept-Language"],
@@ -105,7 +99,7 @@ class DouyinWebCrawler:
     def get_douyin_headers_sync(self):
         douyin_config = config["TokenManager"]["douyin"]
         # 获取cookie管理器中的cookie字符串
-        cookie_string = self.cookie_manager.get_cookie_string()
+        cookie_string = get_cookie_string()
         # 如果cookie管理器中没有有效的cookie，则使用配置文件中的cookie
         # if not cookie_string:
         #     self.logger.warning("使用配置文件中的默认Cookie")
@@ -190,7 +184,7 @@ class DouyinWebCrawler:
     # 获取用户收藏作品数据（用户提供自己的Cookie）
     async def fetch_user_collection_videos(self, cookie: str, cursor: int = 0, count: int = 20):
         kwargs = await self.get_douyin_headers()
-        kwargs["headers"]["Cookie"] = cookie
+        # kwargs["headers"]["Cookie"] = cookie
         base_crawler = BaseCrawler(proxies=kwargs["proxies"], crawler_headers=kwargs["headers"])
         async with base_crawler as crawler:
             params = UserCollection(cursor=cursor, count=count)

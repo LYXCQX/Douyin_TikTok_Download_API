@@ -8,7 +8,6 @@ from urllib.parse import urlencode  # URL编码
 import yaml  # 配置文件
 # 基础爬虫客户端和抖音API端点
 from Douyin_TikTok_Download_API.crawlers.base_crawler import BaseCrawler
-from Douyin_TikTok_Download_API.crawlers.douyin.web.cookie_manager import CookieManager
 from Douyin_TikTok_Download_API.crawlers.douyin.web.endpoints import DouyinAPIEndpoints
 # 抖音接口数据请求模型
 # 抖音应用的工具类
@@ -21,10 +20,12 @@ from Douyin_TikTok_Download_API.crawlers.douyin.web.utils import (  # Aweme ID�
     # URL提取
 )
 
-from src.publish.Douyin_TikTok_Download_API.crawlers.douyin.web.models import (
+from Douyin_TikTok_Download_API.crawlers.douyin.web.models import (
     SuggestWord, GeneralSearch,
     SortType, PublishTime, FilterDuration, SearchRange, ContentType
 )
+
+from Douyin_TikTok_Download_API.crawlers.douyin.web.cookie_manager import get_cookie_string
 
 # 配置文件路径
 path = os.path.abspath(os.path.dirname(__file__))
@@ -42,17 +43,11 @@ class DouyinOtherCrawler:
         Args:
             account_path: account.json文件的路径，如果不提供，将使用默认路径
         """
-        # 初始化cookie管理器
-        self.cookie_manager = CookieManager(account_path)
-        # 检查cookie是否有效
-        if not self.cookie_manager.is_valid():
-            print("Cookie无效或缺少关键字段，某些接口可能无法正常工作")
-
     # 从配置文件中获取抖音的请求头，同时使用cookie_manager中的cookie
     async def get_douyin_headers(self):
         douyin_config = config["TokenManager"]["douyin"]
         # 获取cookie管理器中的cookie字符串
-        cookie_string = self.cookie_manager.get_cookie_string()
+        cookie_string = get_cookie_string()
         # 如果cookie管理器中没有有效的cookie，则使用配置文件中的cookie
         # if not cookie_string:
         #     self.logger.warning("使用配置文件中的默认Cookie")
@@ -71,7 +66,7 @@ class DouyinOtherCrawler:
     def get_douyin_headers_sync(self):
         douyin_config = config["TokenManager"]["douyin"]
         # 获取cookie管理器中的cookie字符串
-        cookie_string = self.cookie_manager.get_cookie_string()
+        cookie_string = get_cookie_string()
         # 如果cookie管理器中没有有效的cookie，则使用配置文件中的cookie
         # if not cookie_string:
         #     self.logger.warning("使用配置文件中的默认Cookie")
@@ -106,7 +101,7 @@ class DouyinOtherCrawler:
             response = await crawler.fetch_get_json(endpoint)
         return response
 
-    async def fetch_general_search(self, key_words: str, offset: int = 0, count: int = 10,
+    async def fetch_general_search(self, key_words: str, offset: int = 0, count: int = 20,
                                    search_id: str = "",
                                    sort_type: Optional[SortType] = None,
                                    publish_time: Optional[PublishTime] = None,
@@ -134,6 +129,7 @@ class DouyinOtherCrawler:
         """
         # 获取抖音的实时Cookie
         kwargs = await self.get_douyin_headers()
+        print(f"kwargs: {kwargs}")
         # 创建一个基础爬虫
         base_crawler = BaseCrawler(proxies=kwargs["proxies"], crawler_headers=kwargs["headers"])
         async with base_crawler as crawler:
@@ -167,21 +163,22 @@ class DouyinOtherCrawler:
             # 更新params的filter_selected字段
             params.filter_selected = json.dumps(default_filter, separators=(',', ':'))
             params_dict = params.dict()
-            print(params_dict)
             # 获取有效的msToken
             # params_dict["msToken"] = TokenManager.gen_real_msToken()
             # 生成a_bogus参数
             a_bogus = BogusManager.ab_model_2_endpoint(params_dict, kwargs["headers"]["User-Agent"])
             # 构建完整的API请求URL
             endpoint = f"{DouyinAPIEndpoints.GENERAL_SEARCH}?{urlencode(params_dict)}&a_bogus={a_bogus}"
+            print(f"endpoint: {endpoint}")
             # 发送请求并获取响应
             response = await crawler.fetch_get_json(endpoint)
+            print(f"response: {response}")
             return response
 
 
 if __name__ == "__main__":
     # 初始化
-    DouyinWebCrawler = DouyinOtherCrawler()
+    # DouyinWebCrawler = DouyinOtherCrawler()
 
     # 开始时间
     start = time.time()
@@ -205,27 +202,27 @@ if __name__ == "__main__":
     '''
 
     # 测试综合搜索接口 - 方式2: 使用枚举进行筛选（推荐）
-    search_result = asyncio.run(DouyinWebCrawler.fetch_general_search(
-        key_words='私藏一片坠落的星光',
-        offset=0,
-        count=20,
-        sort_type=SortType.COMPREHENSIVE,  # 综合排序
-        publish_time=PublishTime.WITHIN_WEEK,  # 一周内
-        filter_duration=FilterDuration.UNDER_ONE_MINUTE,  # 1分钟以下
-        content_type=ContentType.VIDEO  # 只显示视频
-    ))
-
-    # 打印结果中的关键数据
-    if search_result and "data" in search_result:
-        print(f"搜索结果数量: {len(search_result['data'])}")
-        for i, item in enumerate(search_result['data'][:3]):  # 只打印前3条结果
-            if "aweme_info" in item:
-                aweme = item["aweme_info"]
-                print(f"\n结果 {i + 1}:")
-                print(f"标题: {aweme.get('desc', '无标题')}")
-                print(f"作者: {aweme.get('author', {}).get('nickname', '未知作者')}")
-                print(f"点赞: {aweme.get('statistics', {}).get('digg_count', 0)}")
-                print(f"评论: {aweme.get('statistics', {}).get('comment_count', 0)}")
+    # search_result = asyncio.run(DouyinWebCrawler.fetch_general_search(
+    #     key_words='私藏一片坠落的星光',
+    #     offset=0,
+    #     count=20,
+    #     sort_type=SortType.COMPREHENSIVE,  # 综合排序
+    #     publish_time=PublishTime.WITHIN_WEEK,  # 一周内
+    #     filter_duration=FilterDuration.UNDER_ONE_MINUTE,  # 1分钟以下
+    #     content_type=ContentType.VIDEO  # 只显示视频
+    # ))
+    #
+    # # 打印结果中的关键数据
+    # if search_result and "data" in search_result:
+    #     print(f"搜索结果数量: {len(search_result['data'])}")
+    #     for i, item in enumerate(search_result['data'][:3]):  # 只打印前3条结果
+    #         if "aweme_info" in item:
+    #             aweme = item["aweme_info"]
+    #             print(f"\n结果 {i + 1}:")
+    #             print(f"标题: {aweme.get('desc', '无标题')}")
+    #             print(f"作者: {aweme.get('author', {}).get('nickname', '未知作者')}")
+    #             print(f"点赞: {aweme.get('statistics', {}).get('digg_count', 0)}")
+    #             print(f"评论: {aweme.get('statistics', {}).get('comment_count', 0)}")
 
     # 结束时间
     end = time.time()
