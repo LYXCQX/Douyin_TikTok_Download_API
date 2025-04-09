@@ -44,10 +44,10 @@ class DouyinOtherCrawler:
             account_path: account.json文件的路径，如果不提供，将使用默认路径
         """
     # 从配置文件中获取抖音的请求头，同时使用cookie_manager中的cookie
-    async def get_douyin_headers(self):
+    async def get_douyin_headers(self,account_path=None):
         douyin_config = config["TokenManager"]["douyin"]
         # 获取cookie管理器中的cookie字符串
-        cookie_string = get_cookie_string()
+        cookie_string = get_cookie_string(account_path)
         # 如果cookie管理器中没有有效的cookie，则使用配置文件中的cookie
         # if not cookie_string:
         #     self.logger.warning("使用配置文件中的默认Cookie")
@@ -108,7 +108,9 @@ class DouyinOtherCrawler:
                                    filter_duration: Optional[FilterDuration] = None,
                                    search_range: Optional[SearchRange] = None,
                                    content_type: Optional[ContentType] = None,
-                                   filter_options: Optional[Dict[str, str]] = None):
+                                   filter_options: Optional[Dict[str, str]] = None,
+                                   account_path: str = None
+                                   ):
         """
         抖音综合搜索接口
         
@@ -128,7 +130,7 @@ class DouyinOtherCrawler:
             搜索结果的JSON响应
         """
         # 获取抖音的实时Cookie
-        kwargs = await self.get_douyin_headers()
+        kwargs = await self.get_douyin_headers(account_path)
         # 创建一个基础爬虫
         base_crawler = BaseCrawler(proxies=kwargs["proxies"], crawler_headers=kwargs["headers"])
         async with base_crawler as crawler:
