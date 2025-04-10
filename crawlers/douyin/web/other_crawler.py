@@ -94,7 +94,7 @@ class DouyinOtherCrawler:
         async with base_crawler as crawler:
             params = SuggestWord(querry=key_words, business_id=business_id, from_group_id=from_group_id)
             params_dict = params.dict()
-            params_dict["msToken"] = ''
+            params_dict["msToken"] = TokenManager.gen_real_msToken()
             a_bogus = BogusManager.ab_model_2_endpoint(params_dict, kwargs["headers"]["User-Agent"])
             endpoint = f"{DouyinAPIEndpoints.SUGGEST_WORDS}?{urlencode(params_dict)}&a_bogus={a_bogus}"
 
@@ -144,7 +144,7 @@ class DouyinOtherCrawler:
             )
 
             # 默认筛选设置
-            default_filter = {"sort_type": "0", "publish_time": "0"}
+            default_filter = {}
             # 使用枚举值更新筛选选项
             if sort_type is not None:
                 default_filter["sort_type"] = sort_type.value
@@ -162,10 +162,13 @@ class DouyinOtherCrawler:
                 default_filter.update(filter_options)
 
             # 更新params的filter_selected字段
-            params.filter_selected = json.dumps(default_filter, separators=(',', ':'))
+            if default_filter:
+                params.filter_selected = json.dumps(default_filter, separators=(',', ':'))
+            # params.filter_selected = default_filter
             params_dict = params.dict()
+            # print(params)
             # 获取有效的msToken
-            # params_dict["msToken"] = TokenManager.gen_real_msToken()
+            params_dict["msToken"] = TokenManager.gen_real_msToken()
             # 生成a_bogus参数
             a_bogus = BogusManager.ab_model_2_endpoint(params_dict, kwargs["headers"]["User-Agent"])
             # 构建完整的API请求URL
