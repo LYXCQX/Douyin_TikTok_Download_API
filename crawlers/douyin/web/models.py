@@ -295,7 +295,7 @@ class GeneralSearch(BaseRequestModel):
     # content_type: 0-不限, 1-视频, 2-图文
     filter_selected: str = None
     keyword: str = ""
-    search_source: str = "switch_tab"
+    search_source: str = "normal_search"
     query_correct_type: int = 1
     is_filter_search: int = 1
     from_group_id: str = ""

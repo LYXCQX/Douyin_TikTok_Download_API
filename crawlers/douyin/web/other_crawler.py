@@ -166,7 +166,6 @@ class DouyinOtherCrawler:
                 params.filter_selected = json.dumps(default_filter, separators=(',', ':'))
             # params.filter_selected = default_filter
             params_dict = params.dict()
-            # print(params)
             # 获取有效的msToken
             params_dict["msToken"] = TokenManager.gen_real_msToken()
             # 生成a_bogus参数
